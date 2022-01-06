@@ -21,26 +21,29 @@ def run_instrument_qc_pipeline():
 
     _load_credentials()
 
-    df = read_cac_google_sheet()
-    print("-- Uploading CAC data")
-    res = batch_upload_df(
-        conn=conn, df=df, tablename="yield.instr_qc_data", insert_type="refresh"
-    )
+    cac = read_cac_google_sheet()
+    # print("-- Uploading CAC data")
+    # res = batch_upload_df(
+    #    conn=conn, df=df, tablename="yield.instr_qc_data", insert_type="refresh"
+    # )
 
-    df = read_chromium_google_sheet()
-    print("-- Uploading Chromium data")
-    res = batch_upload_df(
-        conn=conn, df=df, tablename="yield.instr_qc_data", insert_type="refresh"
-    )
+    chromium = read_chromium_google_sheet()
+    # print("-- Uploading Chromium data")
+    # res = batch_upload_df(
+    # conn=conn, df=df, tablename="yield.instr_qc_data", insert_type="refresh"
+    # )
 
-    df = read_connect_google_sheet()
-    print("-- Uploading Connect data")
-    res = batch_upload_df(
-        conn=conn, df=df, tablename="yield.instr_qc_data", insert_type="refresh"
-    )
+    connect = read_connect_google_sheet()
+    # print("-- Uploading Connect data")
+    # res = batch_upload_df(
+    # conn=conn, df=df, tablename="yield.instr_qc_data", insert_type="refresh"
+    # )
 
-    df = read_controller_google_sheet()
-    print("-- Uploading Controller data")
+    controller = read_controller_google_sheet()
+
+    df = cac.append(chromium.append(connect.append(controller)))
+
+    print("-- Uploading Instrument data")
     res = batch_upload_df(
         conn=conn, df=df, tablename="yield.instr_qc_data", insert_type="refresh"
     )

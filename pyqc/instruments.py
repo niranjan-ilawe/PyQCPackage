@@ -78,16 +78,46 @@ def read_controller_google_sheet(
         "second_sampling": sheet1.getColumn(22),
     }
 
-    df_ctrl = pd.DataFrame(d)
+    df_ctrl21 = pd.DataFrame(d)
     # drop first row
-    df_ctrl = df_ctrl.iloc[1:, :]
+    df_ctrl21 = df_ctrl21.iloc[1:, :]
     # clean empty rows
     nan_value = float("NaN")
-    df_ctrl.replace("NA", nan_value, inplace=True)
-    df_ctrl.replace("", nan_value, inplace=True)
-    df_ctrl = df_ctrl.dropna(subset=["sn"])
-    df_ctrl["qc_date"] = df_ctrl["qc_date"].fillna(method="ffill")
-    df_ctrl = df_ctrl.assign(pn="Controller")
+    df_ctrl21.replace("NA", nan_value, inplace=True)
+    df_ctrl21.replace("", nan_value, inplace=True)
+    df_ctrl21 = df_ctrl21.dropna(subset=["sn"])
+    df_ctrl21["qc_date"] = df_ctrl21["qc_date"].fillna(method="ffill")
+    df_ctrl21 = df_ctrl21.assign(pn="Controller")
+
+    ## 2020 sheet
+    sheet_id = "1R6V3dcwMxP2zPcgaxmErL7vbCeb-5y2r6M7e_YI1dMA"
+    ss = ezsheets.Spreadsheet(sheet_id)
+
+    sheet1 = ss["SG-QC Log"]
+
+    d = {
+        "qc_date": sheet1.getColumn(2),
+        # "pn": sheet1.getColumn(4),
+        "sn": sheet1.getColumn(5),
+        "cosmetic_disp": sheet1.getColumn(11),
+        "functional_disp": sheet1.getColumn(12),
+        "final_disp": sheet1.getColumn(13),
+        "qc_attempt": sheet1.getColumn(14),
+        "second_sampling": sheet1.getColumn(22),
+    }
+
+    df_ctrl20 = pd.DataFrame(d)
+    # drop first row
+    df_ctrl20 = df_ctrl20.iloc[1:, :]
+    # clean empty rows
+    nan_value = float("NaN")
+    df_ctrl20.replace("NA", nan_value, inplace=True)
+    df_ctrl20.replace("", nan_value, inplace=True)
+    df_ctrl20 = df_ctrl20.dropna(subset=["sn"])
+    df_ctrl20["qc_date"] = df_ctrl20["qc_date"].fillna(method="ffill")
+    df_ctrl20 = df_ctrl20.assign(pn="Controller")
+
+    df_ctrl = df_ctrl20.append(df_ctrl21)
 
     return df_ctrl
 
@@ -113,13 +143,41 @@ def read_chromium_google_sheet(
         # "second_sampling": sheet1.getColumn(22),
     }
 
-    df_chrm = pd.DataFrame(d)
+    df_chrm21 = pd.DataFrame(d)
     # drop first row
-    df_chrm = df_chrm.iloc[1:, :]
+    df_chrm21 = df_chrm21.iloc[1:, :]
     # clean empty rows
     nan_value = float("NaN")
-    df_chrm.replace("", nan_value, inplace=True)
-    df_chrm = df_chrm.dropna(subset=["sn"])
-    df_chrm = df_chrm.assign(pn="Chromium X")
+    df_chrm21.replace("", nan_value, inplace=True)
+    df_chrm21 = df_chrm21.dropna(subset=["sn"])
+    df_chrm21 = df_chrm21.assign(pn="Chromium X")
+
+    # 2020 sheet
+    sheet_id = "1R6V3dcwMxP2zPcgaxmErL7vbCeb-5y2r6M7e_YI1dMA"
+    ss = ezsheets.Spreadsheet(sheet_id)
+
+    sheet1 = ss["Chromium X -QC Log"]
+
+    d = {
+        "qc_date": sheet1.getColumn(2),
+        # "pn": sheet1.getColumn(4),
+        "sn": sheet1.getColumn(4),
+        "cosmetic_disp": sheet1.getColumn(11),
+        "functional_disp": sheet1.getColumn(12),
+        "final_disp": sheet1.getColumn(13),
+        "qc_attempt": sheet1.getColumn(14)
+        # "second_sampling": sheet1.getColumn(22),
+    }
+
+    df_chrm20 = pd.DataFrame(d)
+    # drop first row
+    df_chrm20 = df_chrm20.iloc[1:, :]
+    # clean empty rows
+    nan_value = float("NaN")
+    df_chrm20.replace("", nan_value, inplace=True)
+    df_chrm20 = df_chrm20.dropna(subset=["sn"])
+    df_chrm20 = df_chrm20.assign(pn="Chromium X")
+
+    df_chrm = df_chrm20.append(df_chrm21)
 
     return df_chrm

@@ -9,7 +9,7 @@ def readme():
 
 setup(
     name="pyqc",
-    version="0.1.9000",
+    version="0.1.1",
     description="Package for pulling QC data",
     url="https://github.com/niranjan-ilawe/PyQCPackage",
     author="Niranjan Ilawe",

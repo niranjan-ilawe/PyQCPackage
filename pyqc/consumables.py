@@ -55,6 +55,8 @@ def read_sg_google_sheet(sheet_id="17UufvY6Ub0Swb4KUwifVGtycwebUg1YzQdxmBaZnano"
         "start_date": sheet1.getColumn(6),
         "end_date": sheet1.getColumn(7),
         "status": sheet1.getColumn(9),
+        "failed_assay": sheet1.getColumn(11),
+        "item_type": sheet1.getColumn(18),
     }
 
     df = pd.DataFrame(d)
