@@ -68,14 +68,14 @@ def read_controller_google_sheet(
     sheet1 = ss["Controller-QC Log"]
 
     d = {
-        "qc_date": sheet1.getColumn(2),
+        "qc_date": sheet1.getColumn(3),
         # "pn": sheet1.getColumn(4),
-        "sn": sheet1.getColumn(5),
-        "cosmetic_disp": sheet1.getColumn(11),
-        "functional_disp": sheet1.getColumn(12),
-        "final_disp": sheet1.getColumn(13),
-        "qc_attempt": sheet1.getColumn(14),
-        "second_sampling": sheet1.getColumn(22),
+        "sn": sheet1.getColumn(6),
+        "cosmetic_disp": sheet1.getColumn(12),
+        "functional_disp": sheet1.getColumn(13),
+        "final_disp": sheet1.getColumn(14),
+        "qc_attempt": sheet1.getColumn(15),
+        "second_sampling": sheet1.getColumn(24),
     }
 
     df_ctrl21 = pd.DataFrame(d)
@@ -133,13 +133,13 @@ def read_chromium_google_sheet(
     sheet1 = ss["Chromium X-QC Log"]
 
     d = {
-        "qc_date": sheet1.getColumn(2),
+        "qc_date": sheet1.getColumn(3),
         # "pn": sheet1.getColumn(4),
-        "sn": sheet1.getColumn(4),
-        "cosmetic_disp": sheet1.getColumn(11),
-        "functional_disp": sheet1.getColumn(12),
-        "final_disp": sheet1.getColumn(13),
-        "qc_attempt": sheet1.getColumn(14)
+        "sn": sheet1.getColumn(5),
+        "cosmetic_disp": sheet1.getColumn(12),
+        "functional_disp": sheet1.getColumn(13),
+        "final_disp": sheet1.getColumn(15),
+        "qc_attempt": sheet1.getColumn(17)
         # "second_sampling": sheet1.getColumn(22),
     }
 
