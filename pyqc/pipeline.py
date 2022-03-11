@@ -1,3 +1,5 @@
+from termcolor import colored
+
 from pyqc.instruments import (
     read_cac_google_sheet,
     read_chromium_google_sheet,
@@ -9,6 +11,7 @@ from pyqc.consumables import read_ca_google_sheet, read_sg_google_sheet
 
 from pydb import batch_upload_df, get_postgres_connection
 from pygbmfg.common import _load_credentials, _clear_credentials
+from pyqc.material_qc.df_creation_scripts import get_tso_data
 
 
 def run_instrument_qc_pipeline():
@@ -78,3 +81,24 @@ def run_consumables_qc_pipeline():
     _clear_credentials()
 
     print("****** Pipeline Completed ******")
+
+
+def run_material_qc_pipeline(days=3):
+
+    conn = get_postgres_connection(
+        service_name="cpdda-postgres", username="cpdda", db_name="cpdda"
+    )
+
+    print("---- Getting TSO QC Data ----")
+    try:
+        df = get_tso_data(days)
+        print(colored("---- Uploading TSO QC Data ----", "green"))
+        batch_upload_df(
+            conn=conn,
+            df=df,
+            tablename="gbmfg.kit_funcseq_data",
+            insert_type="update",
+            key_cols="lot",
+        )
+    except:
+        print(colored("---- Skipping TSO QC Data ----", "yellow"))
