@@ -1,6 +1,7 @@
 drop table yield.instr_qc_data ;
 create table yield.instr_qc_data (
 	qc_date varchar(30) null,
+	submit_date varchar(30) null,
 	sn varchar(30) null,
 	cosmetic_disp varchar(20) null,
 	functional_disp varchar(20) null,

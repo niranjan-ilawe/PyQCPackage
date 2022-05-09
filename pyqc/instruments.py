@@ -70,6 +70,7 @@ def read_controller_google_sheet(
     d = {
         "qc_date": sheet1.getColumn(3),
         # "pn": sheet1.getColumn(4),
+        "submit_date": sheet1.getColumn(2),
         "sn": sheet1.getColumn(6),
         "cosmetic_disp": sheet1.getColumn(12),
         "functional_disp": sheet1.getColumn(13),
@@ -135,6 +136,7 @@ def read_chromium_google_sheet(
     d = {
         "qc_date": sheet1.getColumn(3),
         # "pn": sheet1.getColumn(4),
+        "submit_date": sheet1.getColumn(2),
         "sn": sheet1.getColumn(5),
         "cosmetic_disp": sheet1.getColumn(12),
         "functional_disp": sheet1.getColumn(13),

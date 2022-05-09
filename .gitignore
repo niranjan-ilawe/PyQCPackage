@@ -13,3 +13,5 @@
 *.pickle
 *.json
 .Rhistory
+*.xlsx
+*.txt
