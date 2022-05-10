@@ -3,7 +3,7 @@ import smtplib
 from email.mime.text import MIMEText
 
 qc_email_dict = {
-    "Niranjan": "niranjan.ilawe@10xgenomics.com",
+    "ilawe.niranjan": "niranjan.ilawe@10xgenomics.com",
     "Supervisor": "niranjan.ilawe@10xgenomics.com",
 }
 
@@ -12,7 +12,7 @@ def send_error_emails(error_list, filename, qc_by):
 
     # creating body
     body = f"""
-    Hello {qc_by}, 
+    Hello {qc_by.split(".")[1].capitalize()}, 
     I could not parse the QC123 file: {filename}, you uploaded to Box recently.
     Following errors were found: {error_list}.
     Please follow the recommended practices to ensure proper upload of this data.
