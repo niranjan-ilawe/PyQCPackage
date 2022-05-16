@@ -13,6 +13,13 @@ def read_funcseq_qc_data(file):
 
         df_temp = pd.read_excel(xlsx, sheet_name="Summary- QC Records", header=None)
 
+        qc_by = df_temp[df_temp[1].str.contains("QC'ed by", na=False)].iloc[0, 2]
+
+        # check if qc_by is empty
+        if qc_by == "Enter Here":
+            print("File not ready for ingestion")
+            return pd.DataFrame()
+        
         # extract the date field as it is
         date_string = df_temp[df_temp[1].str.contains("QC end date", na=False)].iloc[
             0, 2
@@ -20,14 +27,15 @@ def read_funcseq_qc_data(file):
 
         # if the field is a string, convert it into a datetime object and then into
         # a properly formatted (Ymd) string
-        if isinstance(date_string, str):
+        if isinstance(date_string, str) and date_string != "Enter Here":
             e_date = dt.date.strftime(
                 dt.datetime.strptime(date_string, "%d-%m-%Y"), "%Y-%m-%d"
             )
-        # if field is empty, somehow its registered as a float
+        # if field is empty, somehow its registered as a float or sometime its
+        # just "Enter Here"
         # this is used as a check if the QC document is complete for ingestion
         # if incomplete, skip reading this file
-        elif isinstance(date_string, float):
+        elif isinstance(date_string, float) or date_string == "Enter Here":
             print("Sequencing results not yet available")
             return pd.DataFrame()
         # if some other format, try converting to proper format string
@@ -35,8 +43,6 @@ def read_funcseq_qc_data(file):
         # error log
         else:
             e_date = dt.date.strftime(date_string, "%Y-%m-%d")
-
-        qc_by = df_temp[df_temp[1].str.contains("QC'ed by", na=False)].iloc[0, 2]
 
         df_temp1 = pd.read_excel(xlsx, sheet_name="Disposition", header=None)
 

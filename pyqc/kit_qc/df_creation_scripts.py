@@ -17,7 +17,7 @@ def get_funcseq_data(days=3):
         last_modified_date=last_modified_date,
         box_folder_id="112734413150",
         file_extension="xlsx",
-        file_pattern="Sequencing",
+        file_pattern="Rev N",
         file_parsing_functions=read_funcseq_qc_data,
     )
 
@@ -30,7 +30,7 @@ def get_funcseq_data(days=3):
         last_modified_date=last_modified_date,
         box_folder_id="137579882492",
         file_extension="xlsx",
-        file_pattern="Sequencing",
+        file_pattern="Rev N",
         file_parsing_functions=read_funcseq_qc_data,
     )
 
