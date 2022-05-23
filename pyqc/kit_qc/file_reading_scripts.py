@@ -117,20 +117,25 @@ def read_funcseq_qc_data(file):
         # Extract lot info
         df_ln = pd.read_excel(xlsx, sheet_name="LN Tracking", header=None)
         data_s = df_ln.index[
-            df_ln[0].str.contains("Single Cell Library reagents", na=False)
+            df_ln[1].str.contains("Single Cell Library reagents", na=False)
         ].tolist()
         data_e = df_ln.index[
-            df_ln[0].str.contains("Single Index Kit T", na=False)
+            df_ln[1].str.contains("Single Index Kit T", na=False)
         ].tolist()
         lns = df_ln[data_s[0] : data_e[0]]
         # select relevant columns
-        lns = lns[[0, 1, 2, 3]]
+        lns = lns[[0, 1, 2, 3, 4]]
         # set column names from first row
         lns.columns = lns.iloc[0]
         lns = lns.iloc[1:, :]
         lns.reset_index(drop=True, inplace=True)
         # rename columns
-        lns.columns = ["pn_descrip", "pn", "test", "control"]
+        lns.columns = ["subname", "pn_descrip", "pn", "test", "control"]
+
+        # create new description column
+        lns[['subname']] = lns[['subname']].fillna('')
+        lns['pn_descrip'] = lns['pn_descrip'] + lns['subname']
+        lns = lns.drop(columns=['subname'])
 
         # drop rows that are not associated with any part number and description
         lns = lns.dropna(subset=["pn_descrip", "pn"])
