@@ -13,6 +13,8 @@ from pydb import batch_upload_df, get_postgres_connection
 from pygbmfg.common import _load_credentials, _clear_credentials
 from pyqc.material_qc.df_creation_scripts import get_tso_data
 
+from pyqc.kit_qc.df_creation_scripts import get_funcseq_data
+
 
 def run_instrument_qc_pipeline():
 
@@ -102,3 +104,28 @@ def run_material_qc_pipeline(days=3):
         )
     except:
         print(colored("---- Skipping TSO QC Data ----", "yellow"))
+
+
+def run_qc123_pipeline(days=3):
+
+    conn = get_postgres_connection(
+        service_name="cpdda-postgres", username="cpdda", db_name="cpdda"
+    )
+
+    print("---- Getting QC123 Data ----")
+    try:
+        df = get_funcseq_data(days)
+        print(colored("---- Uploading QC123 Data ----", "green"))
+        cur = conn.cursor()
+        cur.execute(f"DELETE FROM kitqc.metrics_stg;")
+        conn.commit()
+        batch_upload_df(
+            conn=conn,
+            df=df,
+            tablename="kitqc.metrics_stg",
+            insert_type="refresh"
+        )
+        cur.execute(f"call yield.update_gb_dispense(1)")
+        conn.commit()
+    except:
+        print(colored("---- Skipping QC123 Data ----", "yellow"))

@@ -12,18 +12,19 @@ create table kitqc.metrics_stg (
     qc_by varchar(30) null,
     pn_descrip varchar(100) null,
     pn varchar(100) null,
-    "ln" varchar(50) null
+    "ln" varchar(50) null,
+    site varchar(10) null
 );
 
 -- Final tables
 drop table kitqc.file_m;
 create table kitqc.file_m (
     filefk serial primary key,
-    filehash varchar(50) not null,
+    "filename" varchar(255) not null,
     --run
     qc_date date not null,
     qc_by varchar(30) not null,
-    unique(filehash)
+    unique("filename")
 );
 
 drop table kitqc.product_m;
@@ -39,6 +40,7 @@ create table kitqc.lot_m (
 	lnfk serial primary key,
     "ln" varchar(50) not null,
     family varchar(20) not null,
+    site varchar(10) not null,
     unique(ln, family)
 );
 
@@ -62,9 +64,9 @@ AS $procedure$
 begin
 
 --insert into file master
-insert into kitqc.file_m (filehash, qc_date, qc_by)
+insert into kitqc.file_m (filename, qc_date, qc_by)
 select distinct
-	filename as filehash,
+	"filename",
 	--run,''
 	cast(date as date) as qc_date,
 	qc_by
@@ -79,8 +81,8 @@ from kitqc.metrics_stg
 on conflict do nothing;
 
 -- insert into lot master
-insert into kitqc.lot_m (ln, family)
-select distinct stg.ln, stg.family
+insert into kitqc.lot_m (ln, family, site)
+select distinct stg.ln, stg.family, stg.site
 from kitqc.metrics_stg stg
 on conflict do nothing;
 
@@ -89,7 +91,7 @@ insert into kitqc.metric_m (filefk, pnfk, lnfk, sequencer, sample, metric, value
 select f.filefk, p.pnfk, l.lnfk, stg.sequencer, stg.description, stg.metric, stg.value
 from kitqc.metrics_stg stg
 join kitqc.file_m f
-	on stg.filename = f.filehash 
+	on stg.filename = f.filename
 join kitqc.product_m p 
 	on stg.pn = p.pn
 join kitqc.lot_m l 
