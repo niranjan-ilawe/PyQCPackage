@@ -1,6 +1,9 @@
 pyqc
 --------
-``v0.1.1``
+``v0.1.5``
+
+Added to 0.1.5:
+SP to upload kit QC data
 
 Package contains all the relevant scripts to pull manufacturing and QC data from all the Reagent Manufacturing process areas. 
 The flagship functions of this package are the ``run_pipeline`` scripts that will read the files from Box or relevant locations, transform them into dataframes,
