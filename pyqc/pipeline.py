@@ -125,7 +125,7 @@ def run_qc123_pipeline(days=3):
             tablename="kitqc.metrics_stg",
             insert_type="refresh"
         )
-        cur.execute(f"call yield.update_gb_dispense(1)")
+        cur.execute(f"call kitqc.sp_upload_qc123_data(1)")
         conn.commit()
     except:
         print(colored("---- Skipping QC123 Data ----", "yellow"))

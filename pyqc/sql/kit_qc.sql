@@ -7,7 +7,7 @@ create table kitqc.metrics_stg (
     "description" varchar(100) null,
     metric varchar(100) null,
     "value" numeric null,
-    "filename" varchar(50) null,
+    "filename" varchar(255) null,
     "date" varchar(30) null,
     qc_by varchar(30) null,
     pn_descrip varchar(100) null,
