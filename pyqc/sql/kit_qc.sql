@@ -32,17 +32,20 @@ create table kitqc.product_m (
     pnfk serial primary key,
     pn varchar(100) not null,
     pn_descrip varchar(100) not null,
-    unique(pn)
-);
-
-drop table kitqc.lot_m;
-create table kitqc.lot_m (
-	lnfk serial primary key,
     "ln" varchar(50) not null,
     family varchar(20) not null,
     site varchar(10) not null,
-    unique(ln, family)
+    unique(pn, pn_descrip, ln, family, site)
 );
+
+--drop table kitqc.lot_m;
+--create table kitqc.lot_m (
+--	lnfk serial primary key,
+--    "ln" varchar(50) not null,
+--    family varchar(20) not null,
+--    site varchar(10) not null,
+--    unique(ln, family)
+--);
 
 drop table kitqc.metric_m;
 create table kitqc.metric_m (
@@ -53,8 +56,8 @@ create table kitqc.metric_m (
     "value" numeric null,
 	filefk int references kitqc.file_m(filefk) on delete cascade,
 	pnfk int references kitqc.product_m(pnfk) on delete cascade,
-    lnfk int references kitqc.lot_m(lnfk) on delete cascade,
-    unique(filefk, pnfk, lnfk, sample, metric)
+    --lnfk int references kitqc.lot_m(lnfk) on delete cascade,
+    unique(filefk, pnfk, sample, metric)
 );
 
 -- Stored Procedure
@@ -74,29 +77,31 @@ from kitqc.metrics_stg
 on conflict do nothing;
 
 -- insert into product master
-insert into kitqc.product_m (pn, pn_descrip)
+insert into kitqc.product_m (pn, pn_descrip, ln, family, site)
 select distinct 
-	pn, pn_descrip
+	pn, pn_descrip, ln, family, site
 from kitqc.metrics_stg 
 on conflict do nothing;
 
 -- insert into lot master
-insert into kitqc.lot_m (ln, family, site)
-select distinct stg.ln, stg.family, stg.site
-from kitqc.metrics_stg stg
-on conflict do nothing;
+--insert into kitqc.lot_m (ln, family, site)
+--select distinct stg.ln, stg.family, stg.site
+--from kitqc.metrics_stg stg
+--on conflict do nothing;
 
 -- insert into metric master 
-insert into kitqc.metric_m (filefk, pnfk, lnfk, sequencer, sample, metric, value)
-select f.filefk, p.pnfk, l.lnfk, stg.sequencer, stg.description, stg.metric, stg.value
+insert into kitqc.metric_m (filefk, pnfk, sequencer, sample, metric, value)
+select f.filefk, p.pnfk, stg.sequencer, stg.description, stg.metric, stg.value
 from kitqc.metrics_stg stg
 join kitqc.file_m f
 	on stg.filename = f.filename
 join kitqc.product_m p 
-	on stg.pn = p.pn
-join kitqc.lot_m l 
-	on stg.ln = l.ln and stg.family = l.family
-on conflict (filefk, pnfk, lnfk, sample, metric)
+	on stg.pn = p.pn 
+	and stg.pn_descrip  = p.pn_descrip
+	and stg.ln = p.ln 
+	and stg.family = p.family
+	and stg.site = p.site
+on conflict (filefk, pnfk, sample, metric)
 do update set value = EXCLUDED.value;
 
 end
