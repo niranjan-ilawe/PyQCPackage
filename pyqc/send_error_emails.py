@@ -1,6 +1,6 @@
 # Import smtplib for the actual sending function
-import smtplib
-from email.mime.text import MIMEText
+import smtplib, ssl
+import keyring
 
 qc_email_dict = {
     "Admin": "niranjan.ilawe@10xgenomics.com",
@@ -11,6 +11,8 @@ qc_email_dict = {
 def send_error_emails(error_list, filename, qc_by):
 
     # check validatity of qc_by name and email
+    password = keyring.get_password("error_email", "niranjan.ilawe@10xgenomics.com")
+    
     try:
         qc_tech_name = qc_by.split(".")[1].capitalize()
         qc_by_email = f"{qc_by}@10xgenomics.com"
@@ -20,6 +22,8 @@ def send_error_emails(error_list, filename, qc_by):
 
     # creating body
     body = f"""
+    Subject: QC File ingestion Error
+
     Hello {qc_tech_name}, 
     I could not parse the QC123 file: {filename}, you uploaded to Box recently.
     Following errors were found: {error_list}.
@@ -33,19 +37,14 @@ def send_error_emails(error_list, filename, qc_by):
     """
 
     # creating a list of people the emails are sent too
-    receivers = [qc_by_email, qc_email_dict["Supervisor"]]
+    receiver_email = [qc_by_email, qc_email_dict["Supervisor"]]
+    port = 465  # For SSL
+    smtp_server = "smtp.gmail.com"
+    sender_email = "auto.parser.emailer@gmail.com"  # Enter your address
 
-    # converting string to a MIMEtext object. This was necessary since this was the only way
-    # the email was able to distinguish between the subject, to, and from
-    msg = MIMEText(body)
-    msg["Subject"] = "QC123 File Auto-ingestion Error"
-    msg["From"] = "auto-file-parser@10xgenomics.com"
-    msg["To"] = f"{qc_by_email}, {qc_email_dict['Supervisor']}"
-
-    s = smtplib.SMTP("smtp.google.com")
-
-    # the actual email is sent here
-    s.sendmail("auto-file-parser@10xgenomics.com", receivers, msg.as_string())
-    s.quit()
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
+        server.login(sender_email, password)
+        server.sendmail(sender_email, receiver_email, body)
 
     return 0
