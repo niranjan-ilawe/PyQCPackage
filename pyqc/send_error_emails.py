@@ -4,7 +4,7 @@ import keyring
 
 qc_email_dict = {
     "Admin": "niranjan.ilawe@10xgenomics.com",
-    "Supervisor": "niranjan.ilawe@10xgenomics.com",
+    "Supervisor1": "fuying.zheng@10xgenomics.com",
 }
 
 
@@ -21,15 +21,19 @@ def send_error_emails(error_list, filename, qc_by):
         qc_by_email = "niranjan.ilawe@10xgenomics.com"        
 
     # creating body
-    body = f"""
+    body = f"""\
     Subject: QC File ingestion Error
 
     Hello {qc_tech_name}, 
+    
     I could not parse the QC123 file: {filename}, you uploaded to Box recently.
+    
     Following errors were found: {error_list}.
+    
     Please follow the recommended practices to ensure proper upload of this data.
     
     If you have any questions, or you are unable to fix the error, please reach out to CPD Data Analytics.
+    Email: niranjan.ilawe@10xgenomics.com
     (Do not reply to this message directly)
 
     Thank you
@@ -37,7 +41,7 @@ def send_error_emails(error_list, filename, qc_by):
     """
 
     # creating a list of people the emails are sent too
-    receiver_email = [qc_by_email, qc_email_dict["Supervisor"]]
+    receiver_email = [qc_by_email, qc_email_dict["Supervisor1"], qc_email_dict["Admin"]]
     port = 465  # For SSL
     smtp_server = "smtp.gmail.com"
     sender_email = "auto.parser.emailer@gmail.com"  # Enter your address

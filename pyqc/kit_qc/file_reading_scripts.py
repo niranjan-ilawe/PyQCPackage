@@ -19,6 +19,11 @@ def read_funcseq_qc_data(file):
         if qc_by == "Enter Here":
             print("File not ready for ingestion")
             return pd.DataFrame()
+
+        try:
+            qc_tech_name = qc_by.split(".")[1].capitalize()
+        except:
+            error_log.append("QC by name entered wrongly")
         
         # extract the date field as it is
         date_string = df_temp[df_temp[1].str.contains("QC end date", na=False)].iloc[
@@ -113,6 +118,9 @@ def read_funcseq_qc_data(file):
         )
         # add meta data to the dataframe
         data = data.assign(filename=file, date=e_date, qc_by=qc_by)
+
+        if len(data)  == 0:
+            error_log.append("No Disposition Data Entered")
 
         # Extract lot info
         df_ln = pd.read_excel(xlsx, sheet_name="LN Tracking", header=None)
