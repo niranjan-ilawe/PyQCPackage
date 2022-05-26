@@ -4,21 +4,22 @@ import keyring
 
 qc_email_dict = {
     "Admin": "niranjan.ilawe@10xgenomics.com",
-    "Supervisor1": "fuying.zheng@10xgenomics.com",
+    "Supervisor_CA": "fuying.zheng@10xgenomics.com",
+    "Supervisor_SG": "xuelingshirlene.ong@10xgenomics.com"
 }
 
 
-def send_error_emails(error_list, filename, qc_by):
+def send_error_emails(error_list, filename, qc_by, file_loc):
 
     # check validatity of qc_by name and email
     password = keyring.get_password("error_email", "niranjan.ilawe@10xgenomics.com")
     
     try:
-        qc_tech_name = qc_by.split(".")[1].capitalize()
+        qc_tech_name = qc_by.split(".")[0].capitalize()
         qc_by_email = f"{qc_by}@10xgenomics.com"
     except:
         qc_tech_name = qc_by
-        qc_by_email = "niranjan.ilawe@10xgenomics.com"        
+        qc_by_email = qc_email_dict["Admin"]
 
     # creating body
     body = f"""\
@@ -41,7 +42,14 @@ def send_error_emails(error_list, filename, qc_by):
     """
 
     # creating a list of people the emails are sent too
-    receiver_email = [qc_by_email, qc_email_dict["Supervisor1"], qc_email_dict["Admin"]]
+    if file_loc == "CA":
+        supervisor_email = qc_email_dict["Supervisor_CA"]
+    elif file_loc == "SG":
+        supervisor_email = qc_email_dict["Supervisor_SG"]
+    else:
+        supervisor_email = qc_email_dict["Admin"]
+
+    receiver_email = [qc_by_email, supervisor_email, qc_email_dict["Admin"]]
     port = 465  # For SSL
     smtp_server = "smtp.gmail.com"
     sender_email = "auto.parser.emailer@gmail.com"  # Enter your address

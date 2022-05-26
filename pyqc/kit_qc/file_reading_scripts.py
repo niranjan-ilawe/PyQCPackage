@@ -21,9 +21,10 @@ def read_funcseq_qc_data(file):
             return pd.DataFrame()
 
         try:
+            # just a check if the name has been entered in the first.last format
             qc_tech_name = qc_by.split(".")[1].capitalize()
         except:
-            error_log.append("QC by name entered wrongly")
+            error_log.append("'QC by name' entered wrongly")
         
         # extract the date field as it is
         date_string = df_temp[df_temp[1].str.contains("QC end date", na=False)].iloc[
@@ -36,6 +37,8 @@ def read_funcseq_qc_data(file):
             e_date = dt.date.strftime(
                 dt.datetime.strptime(date_string, "%d-%m-%Y"), "%Y-%m-%d"
             )
+            # making this assumption since CA enters date in a particular format
+            file_loc = "CA"
         # if field is empty, somehow its registered as a float or sometime its
         # just "Enter Here"
         # this is used as a check if the QC document is complete for ingestion
@@ -48,6 +51,8 @@ def read_funcseq_qc_data(file):
         # error log
         else:
             e_date = dt.date.strftime(date_string, "%Y-%m-%d")
+            # another assumption based on SG date format
+            file_loc = "SG"
 
         df_temp1 = pd.read_excel(xlsx, sheet_name="Disposition", header=None)
 
@@ -217,7 +222,10 @@ def read_funcseq_qc_data(file):
     # if any error is generated, email the owner and supervisor and
     # return an empty dataframe
     if len(error_log) > 1:
-        send_error_emails(filename=file, error_list=error_log, qc_by=qc_by)
+        send_error_emails(filename=file, 
+                          error_list=error_log, 
+                          qc_by=qc_by, 
+                          file_loc=file_loc)
         # print(error_log)
         df = pd.DataFrame()
 

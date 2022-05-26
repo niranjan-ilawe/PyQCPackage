@@ -1,6 +1,9 @@
 pyqc
 --------
-``v0.1.5``
+``v0.1.6``
+
+Added to 0.1.6:
+Error emailing script fixed
 
 Added to 0.1.5:
 SP to upload kit QC data
