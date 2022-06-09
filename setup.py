@@ -20,6 +20,6 @@ setup(
     test_suite="nose.collector",
     tests_require=["nose"],
     include_package_data=True,
-    package_data={"": ["data/*.json"]},
+    package_data={"": ["data/*.pickle", "data/*.json"]},
     zip_safe=False,
 )
