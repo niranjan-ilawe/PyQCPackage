@@ -1,7 +1,11 @@
 pyqc
 --------
-``v0.1.6``
+``v0.1.7``
 
+Added to 0.1.7:
+ - Added QC167
+ - Moved emailing script to Google API
+ 
 Added to 0.1.6:
 Error emailing script fixed
 

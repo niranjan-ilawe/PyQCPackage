@@ -1,6 +1,68 @@
-# Import smtplib for the actual sending function
-import smtplib, ssl
-import keyring
+import os
+import pickle
+# Gmail API utils
+from googleapiclient.discovery import build
+from google_auth_oauthlib.flow import InstalledAppFlow
+from google.auth.transport.requests import Request
+# for encoding/decoding messages in base64
+from base64 import urlsafe_b64encode
+# for dealing with attachement MIME types
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.image import MIMEImage
+from email.mime.audio import MIMEAudio
+from email.mime.base import MIMEBase
+
+# Request all access (permission to read/send/receive emails, manage the inbox, and more)
+SCOPES = ['https://mail.google.com/']
+our_email = 'niranjan.ilawe@10xgenomics.com'
+
+def gmail_authenticate():
+    creds = None
+    # the file token.pickle stores the user's access and refresh tokens, and is
+    # created automatically when the authorization flow completes for the first time
+    if os.path.exists("token.pickle"):
+        with open("token.pickle", "rb") as token:
+            creds = pickle.load(token)
+    # if there are no (valid) credentials availablle, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file('credentials.json', SCOPES)
+            creds = flow.run_local_server(port=0)
+        # save the credentials for the next run
+        with open("token.pickle", "wb") as token:
+            pickle.dump(creds, token)
+    return build('gmail', 'v1', credentials=creds)
+
+# get the Gmail API service
+service = gmail_authenticate()
+
+def build_message(destination, obj, body, attachments=[]):
+    if not attachments: # no attachments given
+        message = MIMEText(body)
+        message['to'] = destination
+        message['from'] = our_email
+        message['subject'] = obj
+    else:
+        message = MIMEMultipart()
+        message['to'] = destination
+        message['from'] = our_email
+        message['subject'] = obj
+        message.attach(MIMEText(body))
+        for filename in attachments:
+            print("None")
+    return {'raw': urlsafe_b64encode(message.as_bytes()).decode()}
+
+def send_message(service, destination, obj, body, attachments=[]):
+    return service.users().messages().send(
+          userId="me",
+            body=build_message(destination, obj, body, attachments)
+        ).execute()
+
+# send_message(service, "niranjan.ilawe@10xgenomics.com", "This is a subject", 
+#            "This is the body of the email")
 
 qc_email_dict = {
     "Admin": "niranjan.ilawe@10xgenomics.com",
@@ -10,12 +72,9 @@ qc_email_dict = {
 
 
 def send_error_emails(error_list, filename, qc_by, file_loc):
-
-    # check validatity of qc_by name and email
-    password = keyring.get_password("error_email", "niranjan.ilawe@10xgenomics.com")
-    
     try:
         qc_tech_name = qc_by.split(".")[0].capitalize()
+        last_name = qc_by.split(".")[1].capitalize()
         qc_by_email = f"{qc_by}@10xgenomics.com"
     except:
         qc_tech_name = qc_by
@@ -23,8 +82,6 @@ def send_error_emails(error_list, filename, qc_by, file_loc):
 
     # creating body
     body = f"""\
-    Subject: QC File ingestion Error
-
     Hello {qc_tech_name}, 
     
     I could not parse the QC123 file: {filename}, you uploaded to Box recently.
@@ -50,13 +107,9 @@ def send_error_emails(error_list, filename, qc_by, file_loc):
         supervisor_email = qc_email_dict["Admin"]
 
     receiver_email = [qc_by_email, supervisor_email, qc_email_dict["Admin"]]
-    port = 465  # For SSL
-    smtp_server = "smtp.gmail.com"
-    sender_email = "auto.parser.emailer@gmail.com"  # Enter your address
+    receiver_email = ",".join(receiver_email)
 
-    context = ssl.create_default_context()
-    with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
-        server.login(sender_email, password)
-        server.sendmail(sender_email, receiver_email, body)
+    send_message(service, receiver_email, "Auto QC Parser Error", 
+            body)
 
     return 0

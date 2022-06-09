@@ -1,6 +1,12 @@
 -- Staging table
-create schema kitqc;
-drop table kitqc.metrics_stg ;
+--create schema kitqc;
+
+drop table kitqc.metrics_stg;
+drop table kitqc.metric_m;
+drop table kitqc.product_m;
+drop table kitqc.file_m;
+
+
 create table kitqc.metrics_stg (
     family varchar(20) null,
     sequencer varchar(20) null,
@@ -13,21 +19,26 @@ create table kitqc.metrics_stg (
     pn_descrip varchar(100) null,
     pn varchar(100) null,
     "ln" varchar(50) null,
-    site varchar(10) null
+    wo varchar(20) null,
+    site varchar(10) null,
+    product varchar(50) null,
+    runnum varchar(10) null
 );
 
 -- Final tables
-drop table kitqc.file_m;
+
 create table kitqc.file_m (
     filefk serial primary key,
     "filename" varchar(255) not null,
-    --run
+    wo varchar(20) not null,
+    runnum varchar(10) not null,
+    product varchar(50) not null,
     qc_date date not null,
     qc_by varchar(30) not null,
     unique("filename")
 );
 
-drop table kitqc.product_m;
+
 create table kitqc.product_m (
     pnfk serial primary key,
     pn varchar(100) not null,
@@ -47,7 +58,7 @@ create table kitqc.product_m (
 --    unique(ln, family)
 --);
 
-drop table kitqc.metric_m;
+
 create table kitqc.metric_m (
 	obsid serial primary key,
     sequencer varchar(20) null,
@@ -67,10 +78,12 @@ AS $procedure$
 begin
 
 --insert into file master
-insert into kitqc.file_m (filename, qc_date, qc_by)
+insert into kitqc.file_m (filename, wo, runnum, product, qc_date, qc_by)
 select distinct
 	"filename",
-	--run,''
+    wo,
+	runnum,
+    product,
 	cast(date as date) as qc_date,
 	qc_by
 from kitqc.metrics_stg
@@ -107,22 +120,3 @@ do update set value = EXCLUDED.value;
 end
 $procedure$
 ;
-
-select count(1)
-from kitqc.metric_m ;
-
-select * from kitqc.metrics_stg 
-where description = 'T1_161555_163095_161983_162960'
-and metric = 'Valid Barcodes'
-and ln = '200148'
-
-
-update kitqc.metrics_stg set value = 0.999
-where description = 'T1_161555_163095_161983_162960'
-and metric = 'Valid Barcodes'
-and ln = '200148'; 
-
-select * 
-from kitqc.metric_m 
-where sample = 'T1_161555_163095_161983_162960'
-and metric = 'Valid Barcodes'
