@@ -36,9 +36,6 @@ def gmail_authenticate():
             pickle.dump(creds, token)
     return build('gmail', 'v1', credentials=creds)
 
-# get the Gmail API service
-service = gmail_authenticate()
-
 def build_message(destination, obj, body, attachments=[]):
     if not attachments: # no attachments given
         message = MIMEText(body)
@@ -84,7 +81,7 @@ def send_error_emails(error_list, filename, qc_by, file_loc):
     body = f"""\
     Hello {qc_tech_name}, 
     
-    I could not parse the QC123 file: {filename}, you uploaded to Box recently.
+    I could not parse the file: {filename}, you uploaded to Box recently.
     
     Following errors were found: {error_list}.
     
@@ -108,6 +105,9 @@ def send_error_emails(error_list, filename, qc_by, file_loc):
 
     receiver_email = [qc_by_email, supervisor_email, qc_email_dict["Admin"]]
     receiver_email = ",".join(receiver_email)
+
+    # get the Gmail API service
+    service = gmail_authenticate()
 
     send_message(service, receiver_email, "Auto QC Parser Error", 
             body)
