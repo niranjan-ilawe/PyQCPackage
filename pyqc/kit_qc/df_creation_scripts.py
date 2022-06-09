@@ -3,9 +3,12 @@ from pybox import box_create_df_from_files, get_box_client
 
 from pyqc.kit_qc.file_reading_scripts import read_qc123_data, read_qc167_data
 
+from pyqc.common import _load_credentials, _clear_credentials
+
 
 def get_qc123_data(days=3):
 
+    _load_credentials()
     last_modified_date = str(date.today() - timedelta(days=days))
     print(f"Looking for new data since {last_modified_date} ....")
 
@@ -39,10 +42,12 @@ def get_qc123_data(days=3):
 
     df = ca_sc3.append(sg_sc3)
 
+    _clear_credentials()
     return df
 
 def get_qc167_data(days=3):
 
+    _load_credentials()
     last_modified_date = str(date.today() - timedelta(days=days))
     print(f"Looking for new data since {last_modified_date} ....")
 
@@ -75,5 +80,5 @@ def get_qc167_data(days=3):
         ca_sc5 = ca_sc5.assign(site="CA")
 
     df = ca_sc3.append(ca_sc5)
-
+    _clear_credentials()
     return df
