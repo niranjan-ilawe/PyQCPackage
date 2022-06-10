@@ -72,7 +72,7 @@ def send_error_emails(error_list, filename, qc_by, file_loc):
     try:
         qc_tech_name = qc_by.split(".")[0].capitalize()
         last_name = qc_by.split(".")[1].capitalize()
-        qc_by_email = f"{qc_by}@10xgenomics.com"
+        qc_by_email = f"{qc_by.lower()}@10xgenomics.com"
     except:
         qc_tech_name = qc_by
         qc_by_email = qc_email_dict["Admin"]

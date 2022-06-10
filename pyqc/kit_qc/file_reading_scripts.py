@@ -14,15 +14,15 @@ def read_qc123_data(file):
 
         df_temp = pd.read_excel(xlsx, sheet_name="Summary- QC Records", header=None)
 
-        #pn = df_temp[df_temp[1].str.contains("10X Part Number", na=False)].iloc[0, 2]
-        wo = df_temp[df_temp[1].str.contains("Work Order", na=False)].iloc[0, 2]
-
         qc_by = df_temp[df_temp[1].str.contains("QC'ed by", na=False)].iloc[0, 2]
+        #pn = df_temp[df_temp[1].str.contains("10X Part Number", na=False)].iloc[0, 2]
 
         # check if qc_by is empty
         if qc_by == "Enter Here":
             print("File not ready for ingestion")
             return pd.DataFrame()
+
+        wo = df_temp[df_temp[1].str.contains("Work Order", na=False)].iloc[0, 2]
 
         try:
             # just a check if the name has been entered in the first.last format
@@ -39,10 +39,10 @@ def read_qc123_data(file):
         # a properly formatted (Ymd) string
         if isinstance(date_string, str) and date_string != "Enter Here":
             e_date = dt.date.strftime(
-                dt.datetime.strptime(date_string, "%d-%m-%Y"), "%Y-%m-%d"
+                dt.datetime.strptime(date_string, "%d-%b-%Y"), "%Y-%m-%d"
             )
             # making this assumption since CA enters date in a particular format
-            file_loc = "CA"
+            #file_loc = "CA"
         # if field is empty, somehow its registered as a float or sometime its
         # just "Enter Here"
         # this is used as a check if the QC document is complete for ingestion
@@ -56,7 +56,23 @@ def read_qc123_data(file):
         else:
             e_date = dt.date.strftime(date_string, "%Y-%m-%d")
             # another assumption based on SG date format
+            #file_loc = "SG"
+
+        # if the WO starts with a '1' then set file_loc as "CA" if it starts with '2' then 
+        # file_loc as "SG"
+        if re.search("\d",str(wo)).group(0) == '1':
+            file_loc = "CA"
+        elif re.search("\d",str(wo)).group(0) == '2':
             file_loc = "SG"
+        else:
+            file_loc = "NA"
+            error_log.append("'WO on summary page is wrong' does not start with 1 or 2")
+
+        try:
+            run_num = re.findall('[R|r]un.?(\d)', file)[0]
+        except:
+            run_num = 0
+            #error_log.append("'Run Number not found' add '_run #' to file name")
 
         df_temp1 = pd.read_excel(xlsx, sheet_name="Disposition", header=None)
 
@@ -133,21 +149,38 @@ def read_qc123_data(file):
 
         # Extract lot info
         df_ln = pd.read_excel(xlsx, sheet_name="LN Tracking", header=None)
+
+        # product tested for easy linking to trend chart
+        product = df_ln[df_ln[0].str.contains("Single Cell Product", na=False)].iloc[0,1]
+
         data_s = df_ln.index[
-            df_ln[1].str.contains("Single Cell Library reagents", na=False)
+            df_ln[0].str.contains("Single Cell Library reagents", na=False)
         ].tolist()
         data_e = df_ln.index[
-            df_ln[1].str.contains("Single Index Kit T", na=False)
+            df_ln[0].str.contains("Single Index Kit T", na=False)
         ].tolist()
         lns = df_ln[data_s[0] : data_e[0]]
         # select relevant columns
-        lns = lns[[0, 1, 2, 3, 4]]
+        lns = lns[[0, 1, 2, 3]]
         # set column names from first row
         lns.columns = lns.iloc[0]
         lns = lns.iloc[1:, :]
         lns.reset_index(drop=True, inplace=True)
         # rename columns
-        lns.columns = ["subname", "pn_descrip", "pn", "test", "control"]
+        lns.columns = ["pn_descrip", "pn", "test", "control"]
+
+        ## Temp code for adding subname
+        ## delete after ECO
+        subname = ['','','','','','','','',
+                   '','','','','','','',
+                   '','','','','','','',
+                   '','','','','','','','',
+                   '','','GEM Kit','','','','',
+                   '','','Library Kit','','','','',
+                   '','','','','','','',
+                   '','','','','','','']
+
+        lns['subname'] = subname
 
         # create new description column
         lns[['subname']] = lns[['subname']].fillna('')
@@ -175,6 +208,10 @@ def read_qc123_data(file):
         lns = lns[lns["check"] == "Pass"]
         lns = lns.drop(columns=["check"])
 
+        # check if lots only have the 6 digit wo
+        if any([bool(re.search("[^\d{6}\s\/\,:]", str(x))) for x in lns['test']]) or any([bool(re.search("[^\d{6}\s\/\,:]", str(x))) for x in lns['control']]):
+            error_log.append("Lots entered on LN Tracking page not correct")
+
         # Pivot rows to long format
         lns = lns.melt(id_vars=["pn_descrip", "pn"])
         lns.columns = ["pn_descrip", "pn", "family", "ln"]
@@ -186,6 +223,9 @@ def read_qc123_data(file):
         # we are creating a staging table here
         # it will be normalized and stored in the DB using a stored procedure
         df = pd.merge(data, lns, on=["filename", "family"])
+
+        # adding the product column previously extracted from the LN tracking tab
+        df = df.assign(product = product, runnum = run_num)
 
         # cleaning column names
         df.columns = (
@@ -296,11 +336,13 @@ def read_qc167_data(file):
             file_loc = "SG"
         else:
             file_loc = "NA"
+            error_log.append("'WO on summary page is wrong' does not start with 1 or 2")
 
         try:
             run_num = re.findall('[R|r]un.?(\d)', file)[0]
         except:
             run_num = 0
+            error_log.append("'Run Number not found' add '_run #' to file name")
 
         df_temp1 = pd.read_excel(xlsx, sheet_name="Disposition", header=None)
 
@@ -457,6 +499,10 @@ def read_qc167_data(file):
 
         lns = lns[lns["check"] == "Pass"]
         lns = lns.drop(columns=["check"])
+
+        # check if lots only have the 6 digit wo
+        if any([bool(re.search("[^\d{6}\s\/\,:]", str(x))) for x in lns['test']]) or any([bool(re.search("[^\d{6}\s\/\,:]", str(x))) for x in lns['control']]):
+            error_log.append("Lots entered on LN Tracking page not correct")
 
         # Pivot rows to long format
         lns = lns.melt(id_vars=["pn_descrip", "pn"])
