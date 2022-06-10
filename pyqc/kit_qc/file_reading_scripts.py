@@ -71,7 +71,7 @@ def read_qc123_data(file):
         try:
             run_num = re.findall('[R|r]un.?(\d)', file)[0]
         except:
-            run_num = 0
+            run_num = 1
             #error_log.append("'Run Number not found' add '_run #' to file name")
 
         df_temp1 = pd.read_excel(xlsx, sheet_name="Disposition", header=None)
@@ -341,7 +341,7 @@ def read_qc167_data(file):
         try:
             run_num = re.findall('[R|r]un.?(\d)', file)[0]
         except:
-            run_num = 0
+            run_num = 1
             error_log.append("'Run Number not found' add '_run #' to file name")
 
         df_temp1 = pd.read_excel(xlsx, sheet_name="Disposition", header=None)
