@@ -59,7 +59,7 @@ def get_qc167_data(days=3):
         last_modified_date=last_modified_date,
         box_folder_id="137191976028",
         file_extension="xlsx",
-        file_pattern="QC000167",
+        file_pattern="Rev B",
         file_parsing_functions=read_qc167_data,
     )
 
@@ -72,7 +72,7 @@ def get_qc167_data(days=3):
         last_modified_date=last_modified_date,
         box_folder_id="140180957543",
         file_extension="xlsx",
-        file_pattern="QC000167",
+        file_pattern="Rev B",
         file_parsing_functions=read_qc167_data,
     )
 

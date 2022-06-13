@@ -309,7 +309,7 @@ def read_qc167_data(file):
         # a properly formatted (Ymd) string
         if isinstance(date_string, str) and date_string != "Enter Here":
             e_date = dt.date.strftime(
-                dt.datetime.strptime(date_string, "%d-%m-%Y"), "%Y-%m-%d"
+                dt.datetime.strptime(date_string, "%d-%b-%Y"), "%Y-%m-%d"
             )
             # making this assumption since CA enters date in a particular format
             #file_loc = "CA"
@@ -342,7 +342,7 @@ def read_qc167_data(file):
             run_num = re.findall('[R|r]un.?(\d)', file)[0]
         except:
             run_num = 1
-            error_log.append("'Run Number not found' add '_run #' to file name")
+            #error_log.append("'Run Number not found' add '_run #' to file name")
 
         df_temp1 = pd.read_excel(xlsx, sheet_name="Disposition", header=None)
 
