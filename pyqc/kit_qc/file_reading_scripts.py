@@ -38,9 +38,14 @@ def read_qc123_data(file):
         # if the field is a string, convert it into a datetime object and then into
         # a properly formatted (Ymd) string
         if isinstance(date_string, str) and date_string != "Enter Here":
-            e_date = dt.date.strftime(
-                dt.datetime.strptime(date_string, "%d-%b-%Y"), "%Y-%m-%d"
-            )
+            try:
+                e_date = dt.date.strftime(
+                    dt.datetime.strptime(date_string, "%d-%b-%Y"), "%Y-%m-%d"
+                )
+            except:
+                e_date = dt.date.strftime(
+                    dt.datetime.strptime(date_string, "%d-%m-%Y"), "%Y-%m-%d"
+                )
             # making this assumption since CA enters date in a particular format
             #file_loc = "CA"
         # if field is empty, somehow its registered as a float or sometime its
@@ -308,9 +313,14 @@ def read_qc167_data(file):
         # if the field is a string, convert it into a datetime object and then into
         # a properly formatted (Ymd) string
         if isinstance(date_string, str) and date_string != "Enter Here":
-            e_date = dt.date.strftime(
-                dt.datetime.strptime(date_string, "%d-%b-%Y"), "%Y-%m-%d"
-            )
+            try:
+                e_date = dt.date.strftime(
+                    dt.datetime.strptime(date_string, "%d-%b-%Y"), "%Y-%m-%d"
+                )
+            except:
+                e_date = dt.date.strftime(
+                    dt.datetime.strptime(date_string, "%d-%m-%Y"), "%Y-%m-%d"
+                )
             # making this assumption since CA enters date in a particular format
             #file_loc = "CA"
         # if field is empty, somehow its registered as a float or sometime its
