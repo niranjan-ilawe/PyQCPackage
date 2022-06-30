@@ -15,6 +15,7 @@ def get_qc123_data(days=3):
     client = get_box_client()
 
     ## Get CA SC3' kit data
+    # March 2020 - Present/1000122, 094, 158, 123, 157, 120, 144, 127 (SC3_ v3.1 Kits)
     ca_sc3 = box_create_df_from_files(
         box_client=client,
         last_modified_date=last_modified_date,
@@ -28,6 +29,7 @@ def get_qc123_data(days=3):
         ca_sc3 = ca_sc3.assign(site="CA")
 
     ## Get CA SC3' kit data
+    # SG QC Data/ 1000094, 122, 123, 130, 144, 157, 158 (SC3_ v3.1 Kits)
     sg_sc3 = box_create_df_from_files(
         box_client=client,
         last_modified_date=last_modified_date,
@@ -54,6 +56,7 @@ def get_qc167_data(days=3):
     client = get_box_client()
 
     ## Get CA SC3' kit data
+    # March 2020 - Present/1000349, 1000351, 1000373, 2000443 (HT SC3'v3.1)
     ca_sc3 = box_create_df_from_files(
         box_client=client,
         last_modified_date=last_modified_date,

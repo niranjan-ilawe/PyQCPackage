@@ -13,7 +13,7 @@ from pydb import batch_upload_df, get_postgres_connection
 from pygbmfg.common import _load_credentials, _clear_credentials
 from pyqc.material_qc.df_creation_scripts import get_tso_data
 
-from pyqc.kit_qc.df_creation_scripts import get_funcseq_data
+from pyqc.kit_qc.df_creation_scripts import get_qc123_data, get_qc167_data
 
 
 def run_instrument_qc_pipeline():
@@ -114,7 +114,7 @@ def run_qc123_pipeline(days=3):
 
     print("---- Getting QC123 Data ----")
     try:
-        df = get_funcseq_data(days)
+        df = get_qc123_data(days)
         print(colored("---- Uploading QC123 Data ----", "green"))
         cur = conn.cursor()
         cur.execute(f"DELETE FROM kitqc.metrics_stg;")
@@ -129,3 +129,27 @@ def run_qc123_pipeline(days=3):
         conn.commit()
     except:
         print(colored("---- Skipping QC123 Data ----", "yellow"))
+
+def run_qc167_pipeline(days=3):
+
+    conn = get_postgres_connection(
+        service_name="cpdda-postgres", username="cpdda", db_name="cpdda"
+    )
+
+    print("---- Getting QC167 Data ----")
+    try:
+        df = get_qc167_data(days)
+        print(colored("---- Uploading QC167 Data ----", "green"))
+        cur = conn.cursor()
+        cur.execute(f"DELETE FROM kitqc.metrics_stg;")
+        conn.commit()
+        batch_upload_df(
+            conn=conn,
+            df=df,
+            tablename="kitqc.metrics_stg",
+            insert_type="refresh"
+        )
+        cur.execute(f"call kitqc.sp_upload_qc123_data(1)")
+        conn.commit()
+    except:
+        print(colored("---- Skipping QC167 Data ----", "yellow"))
