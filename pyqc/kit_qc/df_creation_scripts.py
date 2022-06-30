@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 from pybox import box_create_df_from_files, get_box_client
 
-from pyqc.kit_qc.file_reading_scripts import read_qc123_data, read_qc167_data
+from pyqc.kit_qc.file_reading_scripts import read_qc123_data_revN, read_qc167_data_revB
 
 from pyqc.common import _load_credentials, _clear_credentials
 
@@ -21,7 +21,7 @@ def get_qc123_data(days=3):
         box_folder_id="112734413150",
         file_extension="xlsx",
         file_pattern="Rev N",
-        file_parsing_functions=read_qc123_data,
+        file_parsing_functions=read_qc123_data_revN,
     )
 
     if ca_sc3.shape[0] > 0:
@@ -34,7 +34,7 @@ def get_qc123_data(days=3):
         box_folder_id="137579882492",
         file_extension="xlsx",
         file_pattern="Rev N",
-        file_parsing_functions=read_qc123_data,
+        file_parsing_functions=read_qc123_data_revN,
     )
 
     if sg_sc3.shape[0] > 0:
@@ -60,7 +60,7 @@ def get_qc167_data(days=3):
         box_folder_id="137191976028",
         file_extension="xlsx",
         file_pattern="Rev B",
-        file_parsing_functions=read_qc167_data,
+        file_parsing_functions=read_qc167_data_revB,
     )
 
     if ca_sc3.shape[0] > 0:
@@ -73,7 +73,7 @@ def get_qc167_data(days=3):
         box_folder_id="140180957543",
         file_extension="xlsx",
         file_pattern="Rev B",
-        file_parsing_functions=read_qc167_data,
+        file_parsing_functions=read_qc167_data_revB,
     )
 
     if ca_sc5.shape[0] > 0:

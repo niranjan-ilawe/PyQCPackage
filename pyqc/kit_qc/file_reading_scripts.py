@@ -5,7 +5,7 @@ import numpy as np
 from pyqc.send_error_emails import send_error_emails
 
 
-def read_qc123_data(file):
+def read_qc123_data_revN(file):
 
     # creating a list of errors, later to be mailed to the qc folks
     error_log = ["Errors"]
@@ -280,7 +280,7 @@ def read_qc123_data(file):
 
     return df
 
-def read_qc167_data(file):
+def read_qc167_data_revB(file):
 
     # creating a list of errors, later to be mailed to the qc folks
     error_log = ["Errors"]
