@@ -33,7 +33,7 @@ def get_qc123_data(days=3):
         last_modified_date=last_modified_date,
         box_folder_id="112734413150",
         file_extension="xlsx",
-        file_pattern="Rev N",
+        file_pattern="Rev P",
         file_parsing_functions=read_qc123_data_revP,
     )
 
@@ -59,7 +59,7 @@ def get_qc123_data(days=3):
         last_modified_date=last_modified_date,
         box_folder_id="137579882492",
         file_extension="xlsx",
-        file_pattern="Rev N",
+        file_pattern="Rev P",
         file_parsing_functions=read_qc123_data_revP,
     )
 
@@ -98,7 +98,7 @@ def get_qc167_data(days=3):
         last_modified_date=last_modified_date,
         box_folder_id="137191976028",
         file_extension="xlsx",
-        file_pattern="Rev B",
+        file_pattern="Rev C",
         file_parsing_functions=read_qc167_data_revC,
     )
 
@@ -124,7 +124,7 @@ def get_qc167_data(days=3):
         last_modified_date=last_modified_date,
         box_folder_id="140180957543",
         file_extension="xlsx",
-        file_pattern="Rev B",
+        file_pattern="Rev C",
         file_parsing_functions=read_qc167_data_revC,
     )
 
