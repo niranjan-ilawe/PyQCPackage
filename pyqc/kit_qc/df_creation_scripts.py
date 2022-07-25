@@ -1,6 +1,5 @@
 from datetime import date, timedelta
 from pybox import box_create_df_from_files, get_box_client
-from PyQCPackage.pyqc.kit_qc.file_reading_scripts import read_qc149_data_revF
 
 from pyqc.kit_qc.file_reading_scripts import read_qc123_data_revN, read_qc167_data_revB, read_qc123_data_revP, read_qc167_data_revC, read_qc149_data_revF
 
