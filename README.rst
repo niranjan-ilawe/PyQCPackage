@@ -1,6 +1,9 @@
 pyqc
 --------
-``v0.1.8``
+``v0.1.9``
+
+Added to 0.1.9:
+ - Added QC149 (rev F)
 
 Added to 0.1.8:
  - Added Rev P to QC123
