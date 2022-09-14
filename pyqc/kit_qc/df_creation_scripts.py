@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 from pybox import box_create_df_from_files, get_box_client
 
-from pyqc.kit_qc.file_reading_scripts import read_qc123_data_revN, read_qc167_data_revB, read_qc123_data_revP, read_qc167_data_revC, read_qc149_data_revF
+from pyqc.kit_qc.file_reading_scripts import read_qc123_data_revN, read_qc167_data_revB, read_qc123_data_revP, read_qc167_data_revC, read_qc149_data_revF, read_qc123_data_revK
 
 from pyqc.common import _load_credentials, _clear_credentials
 
@@ -172,6 +172,39 @@ def get_qc149_data(days=3):
         sg_sc5 = sg_sc5.assign(site="SG")
 
     df = ca_sc5.append(sg_sc5)
+
+    _clear_credentials()
+    return df
+
+def get_historical_data(days=3):
+
+    _load_credentials()
+    last_modified_date = str(date.today() - timedelta(days=days))
+    print(f"Looking for new data since {last_modified_date} ....")
+
+    client = get_box_client()
+
+    ## Get CA SC3' kit data
+    # March 2020 - Present/1000122, 094, 158, 123, 157, 120, 144, 127 (SC3_ v3.1 Kits)
+    revk_data = box_create_df_from_files(
+        box_client=client,
+        last_modified_date=last_modified_date,
+        box_folder_id="168535507101",
+        file_extension="xlsx",
+        file_pattern="Rev K",
+        file_parsing_functions=read_qc123_data_revK,
+    )
+
+    revj_data = box_create_df_from_files(
+        box_client=client,
+        last_modified_date=last_modified_date,
+        box_folder_id="168535507101",
+        file_extension="xlsx",
+        file_pattern="Rev J",
+        file_parsing_functions=read_qc123_data_revK,
+    )
+
+    df = revk_data.append(revj_data)
 
     _clear_credentials()
     return df
