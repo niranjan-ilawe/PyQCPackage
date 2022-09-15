@@ -5,6 +5,7 @@ from pyqc.instruments import (
     read_chromium_google_sheet,
     read_connect_google_sheet,
     read_controller_google_sheet,
+    read_cytassist_google_sheet
 )
 
 from pyqc.consumables import read_ca_google_sheet, read_sg_google_sheet
@@ -46,7 +47,9 @@ def run_instrument_qc_pipeline():
 
     controller = read_controller_google_sheet()
 
-    df = cac.append(chromium.append(connect.append(controller)))
+    cyt = read_cytassist_google_sheet()
+
+    df = cac.append(chromium.append(connect.append(controller.append(cyt))))
 
     print("-- Uploading Instrument data")
     res = batch_upload_df(

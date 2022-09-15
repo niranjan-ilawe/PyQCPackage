@@ -183,3 +183,37 @@ def read_chromium_google_sheet(
     df_chrm = df_chrm20.append(df_chrm21)
 
     return df_chrm
+
+
+def read_cytassist_google_sheet(
+    # sheet_id="1R6V3dcwMxP2zPcgaxmErL7vbCeb-5y2r6M7e_YI1dMA" 2021
+    sheet_id="1q-Dw7mXEd8ZIlcePHw6KraZVnBT343wG1qSfC6t6Emo",
+):
+
+    ss = ezsheets.Spreadsheet(sheet_id)
+
+    sheet1 = ss["CytAssist-QC Log"]
+
+    d = {
+        "qc_date": sheet1.getColumn(3),
+        # "pn": sheet1.getColumn(4),
+        "submit_date": sheet1.getColumn(2),
+        "sn": sheet1.getColumn(6),
+        "cosmetic_disp": sheet1.getColumn(14),
+        "functional_disp": sheet1.getColumn(15),
+        #"nonfunc_disp": sheet1.getColumn(16),
+        "final_disp": sheet1.getColumn(17),
+        "qc_attempt": sheet1.getColumn(18)
+        # "second_sampling": sheet1.getColumn(22),
+    }
+
+    df_chrm21 = pd.DataFrame(d)
+    # drop first row
+    df_chrm21 = df_chrm21.iloc[1:, :]
+    # clean empty rows
+    nan_value = float("NaN")
+    df_chrm21.replace("", nan_value, inplace=True)
+    df_chrm21 = df_chrm21.dropna(subset=["sn"])
+    df_chrm21 = df_chrm21.assign(pn="CytAssist")
+
+    return df_chrm21

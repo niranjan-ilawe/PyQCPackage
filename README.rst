@@ -1,6 +1,9 @@
 pyqc
 --------
-``v0.1.9``
+``v0.1.10``
+
+Added to 0.1.10:
+ - Added CytAssist to Instruments
 
 Added to 0.1.9:
  - Added QC149 (rev F)
