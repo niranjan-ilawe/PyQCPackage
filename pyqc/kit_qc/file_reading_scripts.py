@@ -1358,8 +1358,11 @@ def read_qc149_data_revF(file):
         lns = lns.drop(columns=["check"])
 
         # check if lots only have the 6 digit wo
-        if any([bool(re.search("[^\d{6}\s\/\,:]", str(x))) for x in lns['test']]) or any([bool(re.search("[^\d{6}\s\/\,:]", str(x))) for x in lns['control']]):
+        if any([bool(re.search("[^\d{6}\s\/\,:.]", str(x))) for x in lns['test']]) or any([bool(re.search("[^\d{6}\s\/\,:.]", str(x))) for x in lns['control']]):
             error_log.append("Lots entered on LN Tracking page not correct")
+        else:
+            lns['test'] = pd.to_numeric(lns['test'], downcast='integer')
+            lns['control'] = pd.to_numeric(lns['control'], downcast='integer')
 
         # Pivot rows to long format
         lns = lns.melt(id_vars=["pn_descrip", "pn"])

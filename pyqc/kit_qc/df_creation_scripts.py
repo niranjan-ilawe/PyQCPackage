@@ -191,7 +191,7 @@ def get_historical_data(days=3):
         last_modified_date=last_modified_date,
         box_folder_id="168535507101",
         file_extension="xlsx",
-        file_pattern="Rev K",
+        file_pattern="Rev",
         file_parsing_functions=read_qc123_data_revK,
     )
 
@@ -201,6 +201,24 @@ def get_historical_data(days=3):
         box_folder_id="168535507101",
         file_extension="xlsx",
         file_pattern="Rev J",
+        file_parsing_functions=read_qc123_data_revK,
+    )
+
+    revk_data = box_create_df_from_files(
+        box_client=client,
+        last_modified_date=last_modified_date,
+        box_folder_id="168535507101",
+        file_extension="xlsx",
+        file_pattern="Rev K",
+        file_parsing_functions=read_qc123_data_revK,
+    )
+
+    revk_data = box_create_df_from_files(
+        box_client=client,
+        last_modified_date=last_modified_date,
+        box_folder_id="168535507101",
+        file_extension="xlsx",
+        file_pattern="Rev K",
         file_parsing_functions=read_qc123_data_revK,
     )
 
