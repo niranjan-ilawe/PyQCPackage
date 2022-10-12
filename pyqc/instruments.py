@@ -8,13 +8,14 @@ def read_connect_google_sheet(sheet_id="1M7Jit8f9KST9U8PvH04dbqkjhHk3fiu-_Whk8j6
     sheet1 = ss["QC testing log"]
 
     d = {
-        "qc_date": sheet1.getColumn(1),
+        "qc_date": sheet1.getColumn(3),
+        "submit_date": sheet1.getColumn(1),
         # "pn": sheet1.getColumn(4),
-        "sn": sheet1.getColumn(3),
+        "sn": sheet1.getColumn(5),
         # "cosmetic_disp": sheet1.getColumn(6),
         # "functional_disp": sheet1.getColumn(7),
-        "final_disp": sheet1.getColumn(8),
-        "qc_attempt": sheet1.getColumn(9)
+        "final_disp": sheet1.getColumn(10),
+        "qc_attempt": sheet1.getColumn(11)
         # "second_sampling": sheet1.getColumn(9),
     }
 
