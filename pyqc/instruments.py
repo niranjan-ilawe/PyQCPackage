@@ -37,13 +37,14 @@ def read_cac_google_sheet(sheet_id="1ou1P_jq6b3rcPaYebIpWIEBCH68OWd-ep-cophJ0pDA
     sheet1 = ss["QC Log"]
 
     d = {
-        "qc_date": sheet1.getColumn(2),
+        "submit_date": sheet1.getColumn(1),
+        "qc_date": sheet1.getColumn(3),
         # "pn": sheet1.getColumn(4),
-        "sn": sheet1.getColumn(4),
-        "cosmetic_disp": sheet1.getColumn(6),
-        "functional_disp": sheet1.getColumn(7),
-        "final_disp": sheet1.getColumn(8),
-        "qc_attempt": sheet1.getColumn(9),
+        "sn": sheet1.getColumn(5),
+        "cosmetic_disp": sheet1.getColumn(7),
+        "functional_disp": sheet1.getColumn(8),
+        "final_disp": sheet1.getColumn(9),
+        "qc_attempt": sheet1.getColumn(10),
     }
 
     df_cac = pd.DataFrame(d)
