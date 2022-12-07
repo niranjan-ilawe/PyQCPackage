@@ -766,8 +766,11 @@ def read_qc167_data_revB(file):
 
         # drop rows that are not associated with any part number and description
         lns = lns.dropna(subset=["pn_descrip", "pn"])
+        lns['test'] = lns['test'].astype(str)
+        lns['control'] = lns['control'].astype(str)
         # if a column has 'Enter Here', replace that by NA
         lns = lns.replace("Enter Here", np.nan)
+        lns = lns.replace("na", np.nan)
         # drop all rows where both test and control columns have NAs
         lns = lns.dropna(subset=["test", "control"], how="all")
         # If any of the test or control columns are filled with the other unfilled
@@ -869,7 +872,11 @@ def read_qc167_data_revC(file):
             return pd.DataFrame()
 
         #pn = df_temp[df_temp[1].str.contains("10X Part Number", na=False)].iloc[0, 2]
-        wo = df_temp[df_temp[7].str.contains("Yes", na=False)].iloc[0, 8]
+        try:
+            wo = df_temp[df_temp[7].str.contains("Yes", na=False)].iloc[0, 8]
+        except:
+            error_log.append("WO/Part Number to be QC'ed not entered")
+            wo = "WO999999"
 
         try:
             # just a check if the name has been entered in the first.last format
@@ -1008,6 +1015,11 @@ def read_qc167_data_revC(file):
             print('')
         data2 = data2.drop(columns=['Enter Row # for Each CONTROL Sample'])
 
+        try:
+            data2 = data2.rename(columns={np.nan: "Sequencer"})
+        except:
+            print('Sequencer column missing')
+
         control = pd.concat([data1, data2], axis=1, join="inner")
         control = control.loc[:, ~control.columns.duplicated()]
         control = control.assign(family="control")
@@ -1016,7 +1028,7 @@ def read_qc167_data_revC(file):
         data = result.append(control)
         # pivot the above dataframe to a long format
         data = data.melt(
-            id_vars=["family", "Description"], var_name="metric"
+            id_vars=["family", "Description", "Sequencer"], var_name="metric"
         )
         # add meta data to the dataframe
         data = data.assign(wo = wo, filename=file, date=e_date, qc_by=qc_by)
@@ -1063,8 +1075,12 @@ def read_qc167_data_revC(file):
 
         # drop rows that are not associated with any part number and description
         lns = lns.dropna(subset=["pn_descrip", "pn"])
+        lns['test'] = lns['test'].astype(str)
+        lns['control'] = lns['control'].astype(str)
         # if a column has 'Enter Here', replace that by NA
         lns = lns.replace("Enter Here", np.nan)
+        lns = lns.replace("na", np.nan)
+        lns = lns.replace("nan", np.nan)
         # drop all rows where both test and control columns have NAs
         lns = lns.dropna(subset=["test", "control"], how="all")
         # If any of the test or control columns are filled with the other unfilled
@@ -1340,6 +1356,9 @@ def read_qc149_data_revF(file):
         lns = lns.dropna(subset=["pn_descrip", "pn"])
         # if a column has 'Enter Here', replace that by NA
         lns = lns.replace("Enter Here", np.nan)
+        lns = lns.replace("na", np.nan)
+        lns = lns.replace("nan", np.nan)
+        lns = lns.replace("NA", np.nan)
         # drop all rows where both test and control columns have NAs
         lns = lns.dropna(subset=["test", "control"], how="all")
         # If any of the test or control columns are filled with the other unfilled

@@ -159,7 +159,7 @@ def get_qc149_data(days=3):
 
     ## Get SG SC5' kit data
     # SG QC Data/1000264, 267 (SC5' GB Kit)
-    sg_sc5 = box_create_df_from_files(
+    sg_sc5_1 = box_create_df_from_files(
         box_client=client,
         last_modified_date=last_modified_date,
         box_folder_id="149228044522",
@@ -168,10 +168,22 @@ def get_qc149_data(days=3):
         file_parsing_functions=read_qc149_data_revF
     )
 
-    if sg_sc5.shape[0] > 0:
-        sg_sc5 = sg_sc5.assign(site="SG")
+    if sg_sc5_1.shape[0] > 0:
+        sg_sc5_1 = sg_sc5_1.assign(site="SG")
 
-    df = ca_sc5.append(sg_sc5)
+    sg_sc5_2 = box_create_df_from_files(
+        box_client=client,
+        last_modified_date=last_modified_date,
+        box_folder_id="142515415099",
+        file_extension="xlsx",
+        file_pattern="Rev F",
+        file_parsing_functions=read_qc149_data_revF
+    )
+
+    if sg_sc5_2.shape[0] > 0:
+        sg_sc5_2 = sg_sc5_2.assign(site="SG")
+
+    df = ca_sc5.append(sg_sc5_1.append(sg_sc5_2))
 
     _clear_credentials()
     return df
