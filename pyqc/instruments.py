@@ -120,7 +120,37 @@ def read_controller_google_sheet(
     df_ctrl20["qc_date"] = df_ctrl20["qc_date"].fillna(method="ffill")
     df_ctrl20 = df_ctrl20.assign(pn="Controller")
 
-    df_ctrl = df_ctrl20.append(df_ctrl21)
+    ## 2023 sheet
+    sheet_id = "1NYvotQAiU4Zw7TK27ViG9zVKXjJq3z1OO9YwBl5I7Zg"
+    ss = ezsheets.Spreadsheet(sheet_id)
+
+    # sheet1 = ss["SG-QC Log"] 2021
+    sheet1 = ss["Controller-QC Log"]
+
+    d = {
+        "qc_date": sheet1.getColumn(3),
+        # "pn": sheet1.getColumn(4),
+        "submit_date": sheet1.getColumn(2),
+        "sn": sheet1.getColumn(6),
+        "cosmetic_disp": sheet1.getColumn(12),
+        "functional_disp": sheet1.getColumn(13),
+        "final_disp": sheet1.getColumn(14),
+        "qc_attempt": sheet1.getColumn(15),
+        "second_sampling": sheet1.getColumn(24),
+    }
+
+    df_ctrl23 = pd.DataFrame(d)
+    # drop first row
+    df_ctrl23 = df_ctrl23.iloc[1:, :]
+    # clean empty rows
+    nan_value = float("NaN")
+    df_ctrl23.replace("NA", nan_value, inplace=True)
+    df_ctrl23.replace("", nan_value, inplace=True)
+    df_ctrl23 = df_ctrl23.dropna(subset=["sn"])
+    df_ctrl23["qc_date"] = df_ctrl23["qc_date"].fillna(method="ffill")
+    df_ctrl23 = df_ctrl23.assign(pn="Controller")
+
+    df_ctrl = df_ctrl20.append(df_ctrl21.append(df_ctrl23))
 
     return df_ctrl
 
@@ -156,6 +186,34 @@ def read_chromium_google_sheet(
     df_chrm21 = df_chrm21.dropna(subset=["sn"])
     df_chrm21 = df_chrm21.assign(pn="Chromium X")
 
+    # 2023 sheet
+    sheet_id = "1NYvotQAiU4Zw7TK27ViG9zVKXjJq3z1OO9YwBl5I7Zg"
+    ss = ezsheets.Spreadsheet(sheet_id)
+
+    # sheet1 = ss["Chromium X -QC Log"] 2021
+    sheet1 = ss["Chromium X-QC Log"]
+
+    d = {
+        "qc_date": sheet1.getColumn(3),
+        # "pn": sheet1.getColumn(4),
+        "submit_date": sheet1.getColumn(2),
+        "sn": sheet1.getColumn(5),
+        "cosmetic_disp": sheet1.getColumn(12),
+        "functional_disp": sheet1.getColumn(13),
+        "final_disp": sheet1.getColumn(15),
+        "qc_attempt": sheet1.getColumn(17)
+        # "second_sampling": sheet1.getColumn(22),
+    }
+
+    df_chrm23 = pd.DataFrame(d)
+    # drop first row
+    df_chrm23 = df_chrm23.iloc[1:, :]
+    # clean empty rows
+    nan_value = float("NaN")
+    df_chrm23.replace("", nan_value, inplace=True)
+    df_chrm23 = df_chrm23.dropna(subset=["sn"])
+    df_chrm23 = df_chrm23.assign(pn="Chromium X")
+
     # 2020 sheet
     sheet_id = "1R6V3dcwMxP2zPcgaxmErL7vbCeb-5y2r6M7e_YI1dMA"
     ss = ezsheets.Spreadsheet(sheet_id)
@@ -182,7 +240,7 @@ def read_chromium_google_sheet(
     df_chrm20 = df_chrm20.dropna(subset=["sn"])
     df_chrm20 = df_chrm20.assign(pn="Chromium X")
 
-    df_chrm = df_chrm20.append(df_chrm21)
+    df_chrm = df_chrm20.append(df_chrm21.append(df_chrm23))
 
     return df_chrm
 
@@ -218,4 +276,34 @@ def read_cytassist_google_sheet(
     df_chrm21 = df_chrm21.dropna(subset=["sn"])
     df_chrm21 = df_chrm21.assign(pn="CytAssist")
 
-    return df_chrm21
+    # 2023 sheet
+    sheet_id = "1NYvotQAiU4Zw7TK27ViG9zVKXjJq3z1OO9YwBl5I7Zg"
+    ss = ezsheets.Spreadsheet(sheet_id)
+
+    sheet1 = ss["CytAssist-QC Log"]
+
+    d = {
+        "qc_date": sheet1.getColumn(3),
+        # "pn": sheet1.getColumn(4),
+        "submit_date": sheet1.getColumn(2),
+        "sn": sheet1.getColumn(6),
+        "cosmetic_disp": sheet1.getColumn(14),
+        "functional_disp": sheet1.getColumn(15),
+        #"nonfunc_disp": sheet1.getColumn(16),
+        "final_disp": sheet1.getColumn(17),
+        "qc_attempt": sheet1.getColumn(18)
+        # "second_sampling": sheet1.getColumn(22),
+    }
+
+    df_chrm23 = pd.DataFrame(d)
+    # drop first row
+    df_chrm23 = df_chrm23.iloc[1:, :]
+    # clean empty rows
+    nan_value = float("NaN")
+    df_chrm23.replace("", nan_value, inplace=True)
+    df_chrm23 = df_chrm23.dropna(subset=["sn"])
+    df_chrm23 = df_chrm23.assign(pn="CytAssist")
+
+    df_chrm = df_chrm21.append(df_chrm23)
+
+    return df_chrm
